@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- DEMO: togliere questa riga per un cliente vero -->
+<meta name="robots" content="noindex, nofollow">
+<title>Sito vetrina per negozi di quartiere – demo</title>
+<meta name="description" content="Esempio di sito vetrina per negozi di quartiere: orari, aperto ora, servizi con prezzi, indirizzo, WhatsApp e telefono. Negozi inventati.">
+<meta name="theme-color" content="#222222">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- DEMO: carica i 4 font dei titoli. Per un cliente vero tenere solo Figtree + il font del suo carattere. -->
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&family=Young+Serif&family=Gloock&family=Archivo+Narrow:wght@700&family=Bricolage+Grotesque:opsz,wght@12..96,800&display=swap" rel="stylesheet">
+<script type="application/ld+json" id="jsonld">{}</script>
+<style>
+/* ============ TOKEN COMUNI (design system Vetrina, stile scuro) ============ */
+:root {
+  color-scheme: dark;
+  --surface: #222222;
+  --surface-alt: #2c2c2c;
+  --ink: #ffffff;
+  --ink-muted: #b3b3b3;
+  --line: #737373;
+  --open: #2f7a3a;
+  --closed: #5c5c5c;
+  --whatsapp: #0f7a3d;
+  --today-muted: #4d4d4d;
+
+  --font-body: "Figtree", system-ui, sans-serif;
+
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-10: 40px;
+  --space-16: 64px;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+
+  --border: 1.5px solid var(--line);
+  --maxw: 1080px;
+  --bar-h: 0px;
+}
+
+/* ============ I QUATTRO CARATTERI ============
+   Stesso fondo scuro per tutti. WhatsApp sempre verde (--whatsapp).
+   Niente rosso, rosa o arancio. Cambiano solo brand (bottone Chiama),
+   brand-ink (testo sopra brand), accent (piccoli dettagli) e font dei titoli.
+   Per un cliente vero: tenere solo il suo blocco e mettere in --brand
+   il colore della sua insegna (brand-ink sopra: contrasto almeno 4.5:1). */
+[data-carattere="bottega"] {
+  --brand: #ffffff; --brand-ink: #222222;
+  --accent: #ffffff;
+  --font-display: "Young Serif", Georgia, serif;
+  --hero-size: 44px; --hero-lh: 48px; --hero-w: 400;
+  --section-size: 28px; --section-lh: 34px; --section-w: 400;
+}
+[data-carattere="atelier"] {
+  --brand: #ffffff; --brand-ink: #222222;
+  --accent: #ffffff;
+  --font-display: "Gloock", Georgia, serif;
+  --hero-size: 44px; --hero-lh: 48px; --hero-w: 400;
+  --section-size: 28px; --section-lh: 34px; --section-w: 400;
+}
+[data-carattere="officina"] {
+  --brand: #ffffff; --brand-ink: #222222;
+  --accent: #facc15;
+  --font-display: "Archivo Narrow", "Arial Narrow", sans-serif;
+  --hero-size: 46px; --hero-lh: 48px; --hero-w: 700;
+  --section-size: 30px; --section-lh: 34px; --section-w: 700;
+}
+[data-carattere="energia"] {
+  --brand: #1d4ed8; --brand-ink: #ffffff;
+  --accent: #22c55e;
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --hero-size: 44px; --hero-lh: 46px; --hero-w: 800;
+  --section-size: 28px; --section-lh: 32px; --section-w: 800;
+}
+
+/* ============ BASE ============ */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; background: var(--surface); }
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 400;
+  overflow-wrap: break-word;
+  padding-bottom: var(--bar-h);
+}
+h1, h2, h3, p, ul, ol, dl, figure { margin: 0; }
+ul { padding: 0; list-style: none; }
+/* link: bianchi e sottolineati, mai in brand */
+a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--space-4); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.label { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.small { font-size: 14px; line-height: 20px; }
+.muted { color: var(--ink-muted); }
+.lead { font-size: 19px; line-height: 28px; }
+
+.band { padding: var(--space-16) 0; background: var(--surface); }
+.band + .band { padding-top: 0; }
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: var(--section-size);
+  line-height: var(--section-lh);
+  font-weight: var(--section-w);
+  margin-bottom: var(--space-6);
+}
+/* accent: solo una piccola linea sopra i titoli */
+.section-title::before {
+  content: ""; display: block; width: 40px; height: 4px;
+  background: var(--accent); border-radius: var(--radius-pill);
+  margin-bottom: var(--space-4);
+}
+
+/* ============ SCHEDE (senza riempimento, bordo line, nessuna ombra) ============ */
+.card {
+  background: transparent;
+  border: var(--border); border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+.card:hover { background: var(--surface-alt); }
+
+/* ============ BOTTONI ============ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  min-height: 48px; padding: 12px var(--space-6);
+  border-radius: var(--radius-pill); border: 1.5px solid transparent;
+  font: 600 16px/24px var(--font-body);
+  text-decoration: none; text-align: center; cursor: pointer;
+}
+.btn:hover { filter: brightness(0.9); text-decoration: none; }
+.btn-brand { background: var(--brand); color: var(--brand-ink); }
+.btn-wa { background: var(--whatsapp); color: #ffffff; }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn-ghost:hover { filter: none; background: var(--surface-alt); border-color: var(--ink); }
+
+/* ============ VERSIONE CHIARA ============
+   Si attiva con <html data-tema="chiaro">. Stessa struttura, colori invertiti:
+   fondo bianco, testo #222222, selezionato nero pieno. WhatsApp resta verde. */
+html[data-tema="chiaro"] {
+  color-scheme: light;
+  --surface: #ffffff;
+  --surface-alt: #f2f2f2;
+  --ink: #222222;
+  --ink-muted: #5c5c5c;
+  --line: #8a8a8a;
+  --today-muted: #b3b3b3;
+}
+html[data-tema="chiaro"] body[data-carattere="bottega"],
+html[data-tema="chiaro"] body[data-carattere="atelier"] { --brand: #222222; --brand-ink: #ffffff; --accent: #222222; }
+html[data-tema="chiaro"] body[data-carattere="officina"] { --brand: #222222; --brand-ink: #ffffff; --accent: #ca8a04; }
+html[data-tema="chiaro"] body[data-carattere="energia"] { --accent: #16a34a; }
+
+/* ============ FASCIA DEMO + SELETTORE ============
+   Fondo #1a1a1a e linea sotto: si capisce dove finisce la demo e inizia il sito. */
+.demo {
+  background: #1a1a1a; color: #ffffff;
+  padding: var(--space-4) 0;
+  border-bottom: var(--border);
+}
+.demo :focus-visible { outline-color: #ffffff; }
+.demo-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px var(--space-4); margin-bottom: 12px; }
+.demo-top p { font-size: 14px; line-height: 20px; }
+.demo-top .note { color: #d4d4d4; }
+.picker { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); margin: 0; padding: 0; border: 0; min-width: 0; }
+.picker legend { padding: 0; margin-bottom: var(--space-2); font-weight: 600; font-size: 16px; }
+.picker button {
+  min-height: 56px; padding: 8px 12px;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+  background: transparent; color: #ffffff;
+  border: 2px solid #6b6b6b; border-radius: var(--radius-md);
+  font-family: var(--font-body); text-align: left; cursor: pointer;
+}
+.picker button:hover { border-color: #ffffff; }
+.picker button[aria-pressed="true"] { background: #ffffff; color: #222222; border-color: #ffffff; }
+/* Tasto tema fisso: segue i colori del sito (scuro o chiaro) */
+.tema {
+  position: fixed; z-index: 50;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  right: calc(env(safe-area-inset-right, 0px) + 12px);
+  display: inline-flex; gap: 2px; padding: 3px;
+  background: var(--surface); border: var(--border); border-radius: var(--radius-pill);
+}
+.tema button {
+  width: 40px; height: 40px; display: grid; place-items: center;
+  border: 0; border-radius: var(--radius-pill); padding: 0;
+  background: transparent; color: var(--ink); cursor: pointer;
+}
+.tema button:hover { background: var(--surface-alt); }
+.tema button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.tema button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.demo-top { padding-right: 104px; }
+.picker .p-name { font-size: 20px; line-height: 24px; }
+.picker .p-sub { font-size: 13px; line-height: 18px; opacity: .85; }
+.picker [data-k="bottega"] .p-name { font-family: "Young Serif", Georgia, serif; }
+.picker [data-k="atelier"] .p-name { font-family: "Gloock", Georgia, serif; }
+.picker [data-k="officina"] .p-name { font-family: "Archivo Narrow", "Arial Narrow", sans-serif; font-weight: 700; }
+.picker [data-k="energia"] .p-name { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-weight: 800; }
+
+/* ============ APERTURA ============ */
+.hero { padding: var(--space-10) 0 var(--space-16); }
+.hero-grid { display: grid; gap: var(--space-10); }
+.hero .kind { color: var(--ink-muted); margin-bottom: var(--space-4); }
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: var(--hero-size); line-height: var(--hero-lh); font-weight: var(--hero-w);
+  margin-bottom: var(--space-4);
+}
+.hero .lead { margin-bottom: var(--space-6); max-width: 34em; }
+.status {
+  display: inline-flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+.badge {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 6px 12px; border-radius: var(--radius-pill);
+  color: #ffffff; background: var(--closed);
+  transition: background-color .3s ease;
+}
+.badge::before { content: ""; width: 8px; height: 8px; border-radius: var(--radius-pill); background: #ffffff; }
+.badge.is-open { background: var(--open); }
+.status .when { font-weight: 600; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero .fact { margin-top: var(--space-6); color: var(--ink-muted); }
+
+/* segnaposto foto: fondo surface-alt, bordo line tratteggiato */
+.photo {
+  position: relative; display: flex; align-items: flex-end; justify-content: flex-start;
+  aspect-ratio: 4 / 3; width: 100%;
+  background: var(--surface-alt);
+  border: 1.5px dashed var(--line); border-radius: var(--radius-md);
+  padding: 12px 14px; color: var(--ink-muted);
+}
+.photo span { font-size: 13px; line-height: 18px; }
+.photo.tall { aspect-ratio: 4 / 5; }
+
+/* ============ ORARI: ogni giorno è una scheda ============ */
+.hours-grid { display: grid; gap: var(--space-6); }
+.hours {
+  width: 100%; border-collapse: separate; border-spacing: 0 var(--space-2);
+  margin: calc(-1 * var(--space-2)) 0;
+}
+.hours th, .hours td {
+  text-align: left; vertical-align: top; padding: 12px var(--space-4);
+  border-top: var(--border); border-bottom: var(--border);
+}
+.hours th { font-weight: 600; width: 40%; border-left: var(--border); border-radius: var(--radius-md) 0 0 var(--radius-md); }
+.hours td { color: var(--ink); border-right: var(--border); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+.hours .fascia { white-space: nowrap; }
+.hours .pausa { display: block; color: var(--ink-muted); font-size: 14px; line-height: 20px; }
+.hours tr:hover th, .hours tr:hover td { background: var(--surface-alt); }
+/* oggi = scheda bianca piena, testo scuro (come la scheda attiva del selettore) */
+.hours tr.today th, .hours tr.today td { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.hours tr.today .pausa { color: var(--today-muted); }
+.today-tag {
+  display: inline-block; margin-left: var(--space-2); vertical-align: 1px;
+  padding: 2px 6px; border-radius: var(--radius-sm);
+  background: var(--surface); color: var(--ink);
+}
+.hours-note { color: var(--ink-muted); }
+
+/* ============ COSA FACCIAMO ============ */
+.intro { max-width: 38em; margin-bottom: var(--space-10); color: var(--ink-muted); }
+.items { display: grid; gap: var(--space-6); }
+.item { padding: var(--space-4); }
+.item .photo { margin-bottom: var(--space-4); }
+.item-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4); }
+.item h3 { font-size: 16px; line-height: 24px; font-weight: 600; }
+.price { font-weight: 600; white-space: nowrap; }
+.item p { color: var(--ink-muted); margin-top: 4px; }
+/* telefono: foto piccola a sinistra, testo a destra */
+@media (max-width: 559px) {
+  .items { gap: 12px; }
+  .item { display: grid; grid-template-columns: 96px 1fr; gap: var(--space-4); align-items: start; padding: 12px; }
+  .item .photo { aspect-ratio: 1 / 1; margin-bottom: 0; padding: 6px; grid-row: span 2; }
+  .item .photo span { font-size: 12px; line-height: 16px; }
+  .item-head { flex-direction: column; gap: 0; }
+}
+
+/* ============ DOVE SIAMO ============ */
+.where-grid { display: grid; gap: var(--space-6); }
+address { font-style: normal; font-size: 19px; line-height: 28px; user-select: text; margin-bottom: var(--space-4); }
+.where p + p { margin-top: var(--space-4); }
+
+/* ============ CONTATTI ============ */
+.contact { max-width: 600px; }
+.contact-actions { display: grid; gap: 12px; margin-bottom: var(--space-6); }
+.phone-big { font-size: 28px; line-height: 34px; font-weight: 600; color: var(--ink); text-decoration: none; }
+.phone-big:hover { text-decoration: underline; }
+
+/* ============ PIÈ DI PAGINA ============ */
+footer { background: var(--surface-alt); border-top: var(--border); padding: var(--space-10) 0; }
+footer .wrap > * + * { margin-top: var(--space-2); }
+footer details summary { cursor: pointer; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; display: inline-block; min-height: 24px; }
+footer details p { margin-top: var(--space-2); max-width: 40em; }
+
+/* ============ CERCHIO WHATSAPP (sempre visibile) ============ */
+.bar {
+  position: fixed; z-index: 40;
+  right: calc(env(safe-area-inset-right, 0px) + 16px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+}
+.wa-fab {
+  width: 60px; height: 60px; border-radius: var(--radius-pill);
+  display: grid; place-items: center;
+  background: var(--whatsapp); color: #ffffff;
+  box-shadow: 0 0 0 3px var(--surface);
+}
+.wa-fab:hover { filter: brightness(1.1); }
+.wa-fab:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.wa-fab svg { width: 32px; height: 32px; }
+body { --bar-h: 88px; }
+
+/* ============ PC ============ */
+@media (min-width: 560px) {
+  .picker { grid-template-columns: repeat(4, 1fr); }
+  .items { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 860px) {
+  .wrap { padding: 0 var(--space-6); }
+  .hero { padding: var(--space-16) 0; }
+  .hero-grid { grid-template-columns: 1.1fr 1fr; align-items: center; gap: var(--space-16); }
+  .hours-grid { grid-template-columns: 1.4fr 1fr; gap: var(--space-10); align-items: start; }
+  .items { grid-template-columns: repeat(3, 1fr); }
+  .where-grid { grid-template-columns: 1fr 1.3fr; gap: var(--space-10); align-items: start; }
+  .contact-actions { grid-template-columns: 1fr 1fr; }
+  .section-title { margin-bottom: var(--space-10); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body data-carattere="bottega">
+
+<!-- DEMO: fascia e selettore. Per un cliente vero togliere tutto questo blocco. -->
+<div class="demo" role="region" aria-label="Sito dimostrativo">
+  <div class="wrap">
+    <div class="demo-top">
+      <p><strong>Sito dimostrativo – negozi inventati</strong></p>
+      <p class="note">Nomi, indirizzi e numeri non sono reali.</p>
+    </div>
+    <fieldset class="picker" id="picker">
+      <legend>Scegli il tipo di negozio</legend>
+      <button type="button" data-k="bottega" aria-pressed="true"><span class="p-name">Bottega</span><span class="p-sub">Panificio, pasticceria, bar</span></button>
+      <button type="button" data-k="atelier" aria-pressed="false"><span class="p-name">Atelier</span><span class="p-sub">Parrucchiere, estetista, fiori</span></button>
+      <button type="button" data-k="officina" aria-pressed="false"><span class="p-name">Officina</span><span class="p-sub">Auto, gomme, artigiani</span></button>
+      <button type="button" data-k="energia" aria-pressed="false"><span class="p-name">Energia</span><span class="p-sub">Palestra, danza, locali</span></button>
+    </fieldset>
+  </div>
+</div>
+
+<!-- Tasto versione scura / chiara: sempre visibile in alto a destra -->
+<div class="tema" role="group" aria-label="Versione del sito">
+  <button type="button" data-tema="scuro" aria-pressed="true" aria-label="Versione scura" title="Versione scura">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="currentColor"/></svg>
+  </button>
+  <button type="button" data-tema="chiaro" aria-pressed="false" aria-label="Versione chiara" title="Versione chiara">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g></svg>
+  </button>
+</div>
+
+<p class="sr-only" aria-live="polite" id="annuncio"></p>
+<main id="sito"></main>
+
+<div class="bar" id="bar"></div>
+
+<script>
+/* =====================================================================
+   DATI DEI NEGOZI
+   Per un cliente vero: tenere UN solo negozio, cambiare i dati,
+   e mettere lo stesso nome in CARATTERE_INIZIALE.
+   orari: un elemento per giorno, da lunedì [0] a domenica [6].
+          [] = chiuso, ogni fascia è ["apre", "chiude"].
+   ===================================================================== */
+const NEGOZI = {
+  bottega: {
+    carattere: "bottega",
+    tipoSchema: "Bakery",
+    categoria: "Panificio · Pasticceria",
+    nome: "Forno Santa Lucia",
+    frase: "Pane, focacce e dolci in via dei Tigli 14, a Borgo Esempio. Il forno si accende alle 4 del mattino.",
+    dettaglio: "Forno a legna dal 1987, sempre nella stessa via.",
+    ctaPrincipale: "Ordina una torta su WhatsApp",
+    messaggioWhatsapp: "Buongiorno, vorrei ordinare una torta per il giorno ",
+    fotoApertura: "il bancone con il pane appena sfornato",
+    orari: [
+      [["07:00", "13:00"], ["16:30", "19:30"]],
+      [["07:00", "13:00"], ["16:30", "19:30"]],
+      [["07:00", "13:00"]],
+      [["07:00", "13:00"], ["16:30", "19:30"]],
+      [["07:00", "13:00"], ["16:30", "19:30"]],
+      [["07:00", "13:00"], ["16:30", "19:30"]],
+      [["07:30", "12:30"]]
+    ],
+    notaOrari: "Il mercoledì pomeriggio siamo chiusi. Ad agosto chiudiamo due settimane: lo scriviamo qui e in vetrina.",
+    titoloServizi: "Dal nostro forno",
+    introServizi: "Ogni giorno pane e focacce. Le torte si ordinano con due giorni di anticipo.",
+    servizi: [
+      { nome: "Pane casereccio", prezzo: "3,80 € al kg", testo: "Lievito madre, farina di grano tenero tipo 1, cotto a legna." },
+      { nome: "Focaccia all'olio", prezzo: "1,60 € l'etto", testo: "Alta e morbida, al taglio. Esce dal forno alle 8 e alle 17." },
+      { nome: "Cornetto alla crema", prezzo: "1,20 €", testo: "Pasta sfoglia fatta da noi, crema pasticcera alla vaniglia." },
+      { nome: "Crostata di frutta", prezzo: "18,00 €", testo: "Per 8 persone, con la frutta di stagione." },
+      { nome: "Torta di compleanno", prezzo: "da 24,00 € al kg", testo: "Scegli pan di spagna, crema e scritta. Ordine 2 giorni prima." },
+      { nome: "Biscotti da colazione", prezzo: "14,00 € al kg", testo: "Frolla al burro, anche nella versione senza lattosio." }
+    ],
+    indirizzo: { via: "Via dei Tigli 14", cap: "00000", citta: "Borgo Esempio", provincia: "XX" },
+    comeArrivare: "Davanti alla fermata dell'autobus Piazza Mercato. Parcheggio libero in piazza, a 50 metri.",
+    telefono: "+390000000000",
+    telefonoVisibile: "000 000 0000",
+    whatsapp: "390000000000",
+    ragioneSociale: "Forno Santa Lucia di Esempio s.n.c.",
+    partitaIva: "00000000000"
+  },
+
+  atelier: {
+    carattere: "atelier",
+    tipoSchema: "HairSalon",
+    categoria: "Parrucchiere · Donna e uomo",
+    nome: "Studio Lume",
+    frase: "Taglio, colore e piega in via delle Rose 3, a Borgo Esempio. Si lavora su appuntamento.",
+    dettaglio: "Tre postazioni, prodotti senza ammoniaca per il colore.",
+    ctaPrincipale: "Prenota su WhatsApp",
+    messaggioWhatsapp: "Ciao, vorrei prenotare un appuntamento per ",
+    fotoApertura: "il salone con le postazioni",
+    orari: [
+      [],
+      [["09:00", "19:00"]],
+      [["09:00", "19:00"]],
+      [["09:00", "21:00"]],
+      [["09:00", "19:00"]],
+      [["08:30", "18:00"]],
+      []
+    ],
+    notaOrari: "Orario continuato. Il giovedì restiamo aperti fino alle 21:00 per chi lavora.",
+    titoloServizi: "Servizi e prezzi",
+    introServizi: "I prezzi sono per capelli di media lunghezza. Per capelli lunghi te lo diciamo prima, al momento della prenotazione.",
+    servizi: [
+      { nome: "Taglio donna", prezzo: "28,00 €", testo: "Con shampoo e piega. Circa 45 minuti." },
+      { nome: "Piega", prezzo: "18,00 €", testo: "Liscia o mossa, con shampoo." },
+      { nome: "Colore", prezzo: "45,00 €", testo: "Colore unico dalla radice, piega compresa." },
+      { nome: "Balayage", prezzo: "da 90,00 €", testo: "Schiariture a mano libera. Prima facciamo una prova sulla ciocca." },
+      { nome: "Taglio uomo", prezzo: "18,00 €", testo: "Forbice o macchinetta, con shampoo. Circa 30 minuti." },
+      { nome: "Trattamento ristrutturante", prezzo: "15,00 €", testo: "Per capelli secchi o dopo il colore. Si aggiunge a ogni servizio." }
+    ],
+    indirizzo: { via: "Via delle Rose 3", cap: "00000", citta: "Borgo Esempio", provincia: "XX" },
+    comeArrivare: "Piano terra, accanto alla farmacia. Il salone è senza gradini, accessibile in carrozzina.",
+    telefono: "+390000000000",
+    telefonoVisibile: "000 000 0000",
+    whatsapp: "390000000000",
+    ragioneSociale: "Studio Lume di Esempio s.a.s.",
+    partitaIva: "00000000000"
+  },
+
+  officina: {
+    carattere: "officina",
+    tipoSchema: "AutoRepair",
+    categoria: "Autofficina · Gommista",
+    nome: "Autofficina del Borgo",
+    frase: "Tagliandi, revisioni e gomme in via dell'Industria 42, a Borgo Esempio. Ti diamo il prezzo prima di iniziare.",
+    dettaglio: "In via dell'Industria dal 1994. Auto di cortesia su prenotazione.",
+    ctaPrincipale: "Prenota il tagliando",
+    messaggioWhatsapp: "Buongiorno, vorrei prenotare un tagliando. La mia auto è: ",
+    fotoApertura: "l'officina con il ponte sollevatore",
+    orari: [
+      [["08:00", "12:30"], ["14:30", "18:30"]],
+      [["08:00", "12:30"], ["14:30", "18:30"]],
+      [["08:00", "12:30"], ["14:30", "18:30"]],
+      [["08:00", "12:30"], ["14:30", "18:30"]],
+      [["08:00", "12:30"], ["14:30", "18:30"]],
+      [["08:00", "12:00"]],
+      []
+    ],
+    notaOrari: "Per i guasti urgenti chiama anche in pausa pranzo: se possiamo, rispondiamo.",
+    titoloServizi: "Servizi",
+    introServizi: "Prezzi IVA inclusa per auto fino a 1.600 cc. Per le altre auto chiedi un preventivo su WhatsApp.",
+    servizi: [
+      { nome: "Tagliando completo", prezzo: "da 120,00 €", testo: "Olio, filtri e controllo di 30 punti. Timbro sul libretto." },
+      { nome: "Revisione", prezzo: "79,02 €", testo: "Fatta qui in officina, in giornata. Prenota almeno 3 giorni prima." },
+      { nome: "Cambio gomme", prezzo: "25,00 €", testo: "Smontaggio, montaggio ed equilibratura delle 4 ruote." },
+      { nome: "Deposito gomme", prezzo: "40,00 € a stagione", testo: "Teniamo le tue gomme estive o invernali al coperto." },
+      { nome: "Diagnosi elettronica", prezzo: "35,00 €", testo: "Spia accesa sul cruscotto? Leggiamo la centralina e ti spieghiamo." },
+      { nome: "Ricarica clima", prezzo: "60,00 €", testo: "Controllo perdite e ricarica del gas. Circa un'ora." }
+    ],
+    indirizzo: { via: "Via dell'Industria 42", cap: "00000", citta: "Borgo Esempio", provincia: "XX" },
+    comeArrivare: "Zona artigianale, secondo capannone dopo la rotonda. Piazzale con 10 posti auto.",
+    telefono: "+390000000000",
+    telefonoVisibile: "000 000 0000",
+    whatsapp: "390000000000",
+    ragioneSociale: "Autofficina del Borgo di Esempio s.r.l.",
+    partitaIva: "00000000000"
+  },
+
+  energia: {
+    carattere: "energia",
+    tipoSchema: "ExerciseGym",
+    categoria: "Palestra · Corsi",
+    nome: "Palestra Ritmo",
+    frase: "Sala pesi e corsi in via del Campo Sportivo 5, a Borgo Esempio. Massimo 12 persone per corso.",
+    dettaglio: "Aperta dal 2015. Un istruttore in sala in tutti gli orari.",
+    ctaPrincipale: "Prenota la prova gratis",
+    messaggioWhatsapp: "Ciao, vorrei prenotare la lezione di prova gratuita. Sono libero il giorno ",
+    fotoApertura: "la sala pesi",
+    orari: [
+      [["07:00", "22:00"]],
+      [["07:00", "22:00"]],
+      [["07:00", "22:00"]],
+      [["07:00", "22:00"]],
+      [["07:00", "22:00"]],
+      [["09:00", "18:00"]],
+      [["09:00", "13:00"]]
+    ],
+    notaOrari: "Orario continuato. I corsi di gruppo sono il martedì e il giovedì alle 19:00, il sabato alle 10:00.",
+    titoloServizi: "Abbonamenti e corsi",
+    introServizi: "Nessuna quota di iscrizione. La prima lezione è gratis, poi scegli tu.",
+    servizi: [
+      { nome: "Lezione di prova", prezzo: "gratis", testo: "Un'ora con l'istruttore: ti mostra la sala e ti prepara una scheda." },
+      { nome: "Ingresso singolo", prezzo: "10,00 €", testo: "Sala pesi e cardio, senza abbonamento." },
+      { nome: "Mensile open", prezzo: "45,00 € al mese", testo: "Sala pesi e cardio in tutti gli orari di apertura." },
+      { nome: "Corso funzionale", prezzo: "35,00 € al mese", testo: "Due volte a settimana, martedì e giovedì alle 19:00." },
+      { nome: "Studenti under 25", prezzo: "35,00 € al mese", testo: "Come il mensile open, con il libretto o il badge della scuola." },
+      { nome: "Personal trainer", prezzo: "30,00 € a seduta", testo: "Un'ora da solo con l'istruttore, su appuntamento." }
+    ],
+    indirizzo: { via: "Via del Campo Sportivo 5", cap: "00000", citta: "Borgo Esempio", provincia: "XX" },
+    comeArrivare: "Di fronte al campo da calcio comunale. Rastrelliera per le bici davanti all'ingresso.",
+    telefono: "+390000000000",
+    telefonoVisibile: "000 000 0000",
+    whatsapp: "390000000000",
+    ragioneSociale: "Palestra Ritmo A.S.D. di Esempio",
+    partitaIva: "00000000000"
+  }
+};
+
+const CARATTERE_INIZIALE = "bottega";
+const DEMO = true; // false per un cliente vero: non mostra "Demo" nel titolo della scheda
+
+/* ===================================================================== */
+
+const GIORNI = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
+let corrente = null;
+
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ora = (hhmm) => hhmm.replace(/^0/, "");                 // "07:00" -> "7:00"
+const minuti = (hhmm) => { const [h, m] = hhmm.split(":").map(Number); return h * 60 + m; };
+const oggiIdx = (d) => (d.getDay() + 6) % 7;                  // lunedì = 0
+const waLink = (n, testo) => "https://wa.me/" + n.whatsapp + (testo ? "?text=" + encodeURIComponent(testo) : "");
+const mapsLink = (n) => "https://www.google.com/maps/search/?api=1&query=" +
+  encodeURIComponent(n.indirizzo.via + ", " + n.indirizzo.cap + " " + n.indirizzo.citta);
+
+function fasceTesto(fasce) {
+  if (!fasce.length) return "Chiuso";
+  return fasce.map((f) => '<span class="fascia">' + ora(f[0]) + "–" + ora(f[1]) + "</span>").join(" e ");
+}
+
+function rigaOrari(n, i, oggi) {
+  const fasce = n.orari[i];
+  let pausa = "";
+  if (fasce.length === 2) pausa = '<span class="pausa">Pausa pranzo ' + ora(fasce[0][1]) + "–" + ora(fasce[1][0]) + "</span>";
+  else if (fasce.length === 1 && minuti(fasce[0][0]) <= 750 && minuti(fasce[0][1]) >= 900) pausa = '<span class="pausa">Orario continuato</span>';
+  const isOggi = i === oggi;
+  return '<tr' + (isOggi ? ' class="today" aria-current="date"' : "") + '>' +
+    '<th scope="row">' + GIORNI[i] + (isOggi ? ' <span class="today-tag label">Oggi</span>' : "") + "</th>" +
+    "<td>" + fasceTesto(fasce) + pausa + "</td></tr>";
+}
+
+/* Calcola aperto/chiuso e la prossima apertura o chiusura */
+function stato(n, adesso) {
+  const g = oggiIdx(adesso);
+  const m = adesso.getHours() * 60 + adesso.getMinutes();
+  for (const f of n.orari[g]) {
+    if (m >= minuti(f[0]) && m < minuti(f[1])) return { aperto: true, testo: "Chiude alle " + ora(f[1]) };
+  }
+  for (const f of n.orari[g]) {
+    if (m < minuti(f[0])) return { aperto: false, testo: "Apre oggi alle " + ora(f[0]) };
+  }
+  for (let k = 1; k <= 7; k++) {
+    const gg = (g + k) % 7;
+    if (n.orari[gg].length) {
+      const quando = k === 1 ? "domani" : GIORNI[gg].toLowerCase();
+      return { aperto: false, testo: "Apre " + quando + " alle " + ora(n.orari[gg][0][0]) };
+    }
+  }
+  return { aperto: false, testo: "" };
+}
+
+function aggiornaStato() {
+  if (!corrente) return;
+  const s = stato(corrente, new Date());
+  const badge = document.getElementById("badge");
+  const when = document.getElementById("when");
+  if (!badge) return;
+  badge.classList.toggle("is-open", s.aperto);
+  badge.textContent = s.aperto ? "Aperto ora" : "Chiuso ora";
+  when.textContent = s.testo;
+}
+
+function render(chiave) {
+  const n = NEGOZI[chiave] || NEGOZI[CARATTERE_INIZIALE];
+  corrente = n;
+  document.body.setAttribute("data-carattere", n.carattere);
+  const oggi = oggiIdx(new Date());
+  const ind = n.indirizzo;
+  const indirizzoRiga = ind.cap + " " + ind.citta + " (" + ind.provincia + ")";
+  const wa = waLink(n, n.messaggioWhatsapp);
+  const tel = "tel:" + n.telefono;
+
+  document.getElementById("sito").innerHTML = `
+  <section class="band hero" aria-labelledby="t-nome">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="kind label">${esc(n.categoria)}</p>
+        <h1 id="t-nome">${esc(n.nome)}</h1>
+        <p class="lead">${esc(n.frase)}</p>
+        <p class="status" role="status">
+          <span class="badge label" id="badge">Chiuso ora</span>
+          <span class="when" id="when"></span>
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-wa" href="${esc(wa)}" target="_blank" rel="noopener">${esc(n.ctaPrincipale)}</a>
+          <a class="btn btn-ghost" href="#orari">Orari e indirizzo</a>
+        </div>
+        <p class="fact small">${esc(n.dettaglio)}</p>
+      </div>
+      <div class="photo" role="img" aria-label="Spazio per la foto: ${esc(n.fotoApertura)}">
+        <span>Qui la foto del tuo negozio</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="orari" aria-labelledby="t-orari">
+    <div class="wrap">
+      <h2 class="section-title" id="t-orari">Orari</h2>
+      <div class="hours-grid">
+        <table class="hours">
+          <caption class="sr-only">Orari di apertura di ${esc(n.nome)}, da lunedì a domenica</caption>
+          <tbody>${GIORNI.map((_, i) => rigaOrari(n, i, oggi)).join("")}</tbody>
+        </table>
+        <p class="hours-note">${esc(n.notaOrari)}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="servizi" aria-labelledby="t-servizi">
+    <div class="wrap">
+      <h2 class="section-title" id="t-servizi">${esc(n.titoloServizi)}</h2>
+      <p class="intro">${esc(n.introServizi)}</p>
+      <ul class="items">
+        ${n.servizi.map((s) => `
+        <li class="item card">
+          <div class="photo" role="img" aria-label="Spazio per la foto: ${esc(s.nome)}"><span>Qui la foto del tuo negozio</span></div>
+          <div><div class="item-head"><h3>${esc(s.nome)}</h3><span class="price">${esc(s.prezzo)}</span></div>
+          <p>${esc(s.testo)}</p></div>
+        </li>`).join("")}
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" id="dove" aria-labelledby="t-dove">
+    <div class="wrap">
+      <h2 class="section-title" id="t-dove">Dove siamo</h2>
+      <div class="where-grid">
+      <div class="where card">
+        <address>${esc(ind.via)}<br>${esc(indirizzoRiga)}</address>
+        <p><a href="${esc(mapsLink(n))}" target="_blank" rel="noopener">Apri in Google Maps</a></p>
+        <p class="muted">${esc(n.comeArrivare)}</p>
+      </div>
+      <div class="photo" role="img" aria-label="Spazio per la foto: l'ingresso e l'insegna"><span>Qui la foto del tuo negozio</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="contatti" aria-labelledby="t-contatti">
+    <div class="wrap">
+      <h2 class="section-title" id="t-contatti">Scrivici o chiamaci</h2>
+      <div class="contact card">
+      <div class="contact-actions">
+        <a class="btn btn-wa" href="${esc(wa)}" target="_blank" rel="noopener">Scrivici su WhatsApp</a>
+        <a class="btn btn-brand" href="${esc(tel)}">Chiama</a>
+      </div>
+      <p class="small muted">Oppure chiama il numero</p>
+      <p><a class="phone-big" href="${esc(tel)}">${esc(n.telefonoVisibile)}</a></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap small">
+      <p><strong>${esc(n.ragioneSociale)}</strong> · ${esc(ind.via)}, ${esc(indirizzoRiga)}</p>
+      <p>Partita IVA ${esc(n.partitaIva)}</p>
+      <details>
+        <summary>Privacy</summary>
+        <p class="muted">Questo sito non ha moduli, non usa cookie di profilazione e non raccoglie dati personali. Se ci scrivi su WhatsApp o ci chiami, usiamo il tuo numero solo per risponderti.</p>
+      </details>
+    </div>
+  </footer>`;
+
+  document.getElementById("bar").innerHTML = `
+    <a class="wa-fab" href="${esc(wa)}" target="_blank" rel="noopener" aria-label="Scrivici su WhatsApp" title="Scrivici su WhatsApp">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <!-- Simbolo WhatsApp (tracciato da Simple Icons, CC0) -->
+        <path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+      </svg>
+    </a>`;
+
+  // selettore
+  document.querySelectorAll("#picker button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.k === chiave)));
+
+  // titolo, descrizione, dati strutturati
+  document.title = n.nome + " – " + n.categoria + (DEMO ? " (demo)" : "");
+  document.querySelector('meta[name="description"]').setAttribute("content", n.nome + ": " + n.frase);
+  document.getElementById("jsonld").textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": n.tipoSchema,
+    name: n.nome,
+    description: n.frase,
+    telephone: n.telefono,
+    address: { "@type": "PostalAddress", streetAddress: ind.via, postalCode: ind.cap, addressLocality: ind.citta, addressRegion: ind.provincia, addressCountry: "IT" },
+    openingHoursSpecification: n.orari.flatMap((fasce, i) => fasce.map((f) => ({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: "https://schema.org/" + ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"][i],
+      opens: f[0], closes: f[1]
+    })))
+  });
+
+  aggiornaStato();
+}
+
+function chiaveDaUrl() {
+  const h = location.hash.replace("#", "").toLowerCase();
+  return NEGOZI[h] ? h : null;
+}
+
+document.getElementById("picker").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-k]");
+  if (!b) return;
+  const k = b.dataset.k;
+  try { history.replaceState(null, "", "#" + k); } catch (err) { location.hash = k; }
+  render(k);
+  document.getElementById("annuncio").textContent = "Mostrato: " + NEGOZI[k].nome + ", " + NEGOZI[k].categoria;
+});
+// link interni (#orari...): scorre senza perdere il settore nell'URL
+document.getElementById("sito").addEventListener("click", (e) => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const t = document.querySelector(a.getAttribute("href"));
+  if (!t) return;
+  e.preventDefault();
+  const rid = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  t.scrollIntoView({ behavior: rid ? "auto" : "smooth" });
+  t.setAttribute("tabindex", "-1"); t.focus({ preventScroll: true });
+});
+window.addEventListener("hashchange", () => { const k = chiaveDaUrl(); if (k && NEGOZI[k] !== corrente) render(k); });
+
+// versione scura / chiara: ricordata nel browser del visitatore
+function impostaTema(t) {
+  document.documentElement.setAttribute("data-tema", t);
+  document.querySelector('meta[name="theme-color"]').setAttribute("content", t === "chiaro" ? "#ffffff" : "#222222");
+  document.querySelector('meta[name="color-scheme"]').setAttribute("content", t === "chiaro" ? "light" : "dark");
+  document.querySelectorAll(".tema button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.tema === t)));
+  try { localStorage.setItem("vetrina-tema", t); } catch (err) {}
+}
+document.querySelector(".tema").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-tema]");
+  if (b) impostaTema(b.dataset.tema);
+});
+let temaSalvato = null;
+try { temaSalvato = localStorage.getItem("vetrina-tema"); } catch (err) {}
+impostaTema(temaSalvato === "chiaro" ? "chiaro" : "scuro");
+
+render(chiaveDaUrl() || CARATTERE_INIZIALE);
+setInterval(aggiornaStato, 60 * 1000);
+</script>
+</body>
+</html>
